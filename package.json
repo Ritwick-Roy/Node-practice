@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/Ritwick-Roy/Node-practice#readme",
   "dependencies": {
-    "lodash": "^4.17.21"
+    "express": "^4.17.1"
   }
 }
