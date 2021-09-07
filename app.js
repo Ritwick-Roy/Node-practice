@@ -1,5 +1,5 @@
 const express=require('express'); //this passes the func we're gonna use next
-
+const morgan=require('morgan');
 const app=express();  //this invokes the express function and creates an instance of the app
 
 //register view engine
@@ -8,6 +8,21 @@ app.set('view engine','ejs'); //this lets us configure app settings
 
 //listen for requests
 app.listen(3000);
+
+//middleware example, basic logger
+// app.use((req,res,next)=>{
+//     console.log('new request made:');
+//     console.log('host: ',req.hostname);
+//     console.log('path: ',req.path);
+//     console.log('method: ',req.method);
+//     next();
+// });
+
+//third-party logger
+app.use(morgan('dev'));  //can also use 'tiny' as argument
+
+//middleware and static files like css or images
+app.use(express.static('public')); //everything in public folder is accessible to browser now
 
 app.get('/',(req,res)=>{
     //res.send('<p>home page</p>');  //automatically sets the header and sets the statusCode too
