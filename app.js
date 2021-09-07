@@ -1,13 +1,16 @@
 const express=require('express'); //this passes the func we're gonna use next
 const morgan=require('morgan');
 const mongoose=require('mongoose');
-const Blog=require('./models/blog');
+const blogRoutes=require('./routes/blogRoutes');
 const app=express();  //this invokes the express function and creates an instance of the app
 
 //connect to mongoDB
 const dbURI='mongodb+srv://rishi:rishi@cluster0.4p55l.mongodb.net/node-learn?retryWrites=true&w=majority';
 mongoose.connect(dbURI,{useNewUrlParser:true,useUnifiedTopology:true})  //async task
-    .then((result)=>app.listen(3000)) //listen for requests if connected to db only
+    .then((result)=>{
+        app.listen(3000);
+        console.log('Listening at port 3000');
+    }) //listen for requests if connected to db only
     .catch((err)=>console.log(err));
 
 //register view engine
@@ -67,54 +70,8 @@ app.get('/about',(req,res)=>{
 });
 
 //blog routes
-app.get('/blogs',(req,res)=>{
-    Blog.find().sort({createdAt:-1})
-        .then((result)=>{
-            res.render('index',{title:'All Blogs',blogs:result})
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
-});
+app.use('/blogs',blogRoutes);
 
-app.post('/blogs',(req,res)=>{
-    // console.log(req.body);
-    const blog=new Blog(req.body);
-    blog.save()
-        .then((result)=>{
-            res.redirect('/blogs');
-        })
-        .catch((err)=>{
-            console.log(err);
-        });
-});
-
-app.get('/blogs/create',(req,res)=>{
-    //res.send('<p>home page</p>');  //automatically sets the header and sets the statusCode too
-    res.render('create',{title:'Blogs'});
-});
-
-app.get('/blogs/:id', (req, res) => {
-    const id = req.params.id;
-    Blog.findById(id)
-      .then(result => {
-        res.render('details', { blog: result, title: 'Blog Details' });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  });
-
-  app.delete('/blogs/:id',(req,res)=>{
-      const id=req.params.id;
-      Blog.findByIdAndDelete(id)
-      .then(result => {
-        res.json({redirect:'/blogs'})
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  });
 //express matches the names top to bottom so use will be executed only if nothing else matched with it, everything is matched only once
 //404 page
 app.use((req,res)=>{
